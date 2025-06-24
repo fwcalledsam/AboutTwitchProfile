@@ -179,23 +179,52 @@
     <!-- Juegos que se transmiten -->
     <div class="mb-8">
       <h3 class="text-lg font-semibold mb-4 text-accent">Juegos que juego.. si.. eso...</h3>
-      <div class="flex justify-center gap-4">
+      <div class="flex justify-center gap-4" id="games-container">
         <!-- Game icons generated from centralized data -->
         <script>
           document.write(`
         ${games.map(game => `
           <div class="relative group">
-            <div class="game-icon" title="${game.name}" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div class="game-icon" title="${game.name}" onclick="toggleGameTooltip(this, event)">
               <div class="w-12 h-12 rounded-lg bg-${game.color}/20 flex items-center justify-center border border-${game.color}">
                 ${game.icon}
               </div>
             </div>
-            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-dark border border-accent/30 rounded text-sm whitespace-nowrap hidden group-hover:block">
+            <div class="game-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-dark border border-accent/30 rounded text-sm whitespace-nowrap hidden group-hover:block">
               ${game.name}
             </div>
           </div>
         `).join('')}
       `);
+
+          // Función para manejar el estado de los tooltips
+          function toggleGameTooltip(clickedElement, event) {
+            // Evitar que el evento se propague (para no cerrar inmediatamente)
+            event.stopPropagation();
+
+            // Cerrar todos los tooltips primero
+            const allTooltips = document.querySelectorAll('.game-tooltip');
+            allTooltips.forEach(tooltip => {
+              tooltip.classList.add('hidden');
+            });
+
+            // Abrir solo el tooltip del elemento clickeado
+            const tooltip = clickedElement.nextElementSibling;
+            tooltip.classList.toggle('hidden');
+          }
+
+          // Cerrar tooltips al hacer clic en cualquier parte del documento
+          document.addEventListener('click', function (event) {
+            const gameIcons = document.querySelectorAll('.game-icon');
+            const clickedOnIcon = Array.from(gameIcons).some(icon => icon.contains(event.target));
+
+            if (!clickedOnIcon) {
+              const allTooltips = document.querySelectorAll('.game-tooltip');
+              allTooltips.forEach(tooltip => {
+                tooltip.classList.add('hidden');
+              });
+            }
+          });
         </script>
       </div>
     </div>
